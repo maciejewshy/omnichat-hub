@@ -21,6 +21,7 @@ import { Route as AuthenticatedDashboardReportsRouteImport } from './routes/_aut
 import { Route as AuthenticatedDashboardContactsRouteImport } from './routes/_authenticated/dashboard.contacts'
 import { Route as AuthenticatedDashboardCampaignsRouteImport } from './routes/_authenticated/dashboard.campaigns'
 import { Route as AuthenticatedDashboardBotBuilderRouteImport } from './routes/_authenticated/dashboard.bot-builder'
+import { Route as AuthenticatedDashboardSplatRouteImport } from './routes/_authenticated/dashboard.$'
 import { Route as AuthenticatedDashboardSettingsIndexRouteImport } from './routes/_authenticated/dashboard.settings.index'
 import { Route as AuthenticatedDashboardSettingsLabelsRouteImport } from './routes/_authenticated/dashboard.settings.labels'
 import { Route as AuthenticatedDashboardSettingsInboxesRouteImport } from './routes/_authenticated/dashboard.settings.inboxes'
@@ -93,6 +94,12 @@ const AuthenticatedDashboardBotBuilderRoute =
     path: '/bot-builder',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardSplatRoute =
+  AuthenticatedDashboardSplatRouteImport.update({
+    id: '/$',
+    path: '/$',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardSettingsIndexRoute =
   AuthenticatedDashboardSettingsIndexRouteImport.update({
     id: '/',
@@ -129,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/dashboard/$': typeof AuthenticatedDashboardSplatRoute
   '/dashboard/bot-builder': typeof AuthenticatedDashboardBotBuilderRoute
   '/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRoute
   '/dashboard/contacts': typeof AuthenticatedDashboardContactsRoute
@@ -146,6 +154,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/dashboard/$': typeof AuthenticatedDashboardSplatRoute
   '/dashboard/bot-builder': typeof AuthenticatedDashboardBotBuilderRoute
   '/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRoute
   '/dashboard/contacts': typeof AuthenticatedDashboardContactsRoute
@@ -165,6 +174,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/_authenticated/dashboard/$': typeof AuthenticatedDashboardSplatRoute
   '/_authenticated/dashboard/bot-builder': typeof AuthenticatedDashboardBotBuilderRoute
   '/_authenticated/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRoute
   '/_authenticated/dashboard/contacts': typeof AuthenticatedDashboardContactsRoute
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/dashboard'
+    | '/dashboard/$'
     | '/dashboard/bot-builder'
     | '/dashboard/campaigns'
     | '/dashboard/contacts'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/dashboard/$'
     | '/dashboard/bot-builder'
     | '/dashboard/campaigns'
     | '/dashboard/contacts'
@@ -220,6 +232,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/_authenticated/dashboard'
+    | '/_authenticated/dashboard/$'
     | '/_authenticated/dashboard/bot-builder'
     | '/_authenticated/dashboard/campaigns'
     | '/_authenticated/dashboard/contacts'
@@ -327,6 +340,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardBotBuilderRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/$': {
+      id: '/_authenticated/dashboard/$'
+      path: '/$'
+      fullPath: '/dashboard/$'
+      preLoaderRoute: typeof AuthenticatedDashboardSplatRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/settings/': {
       id: '/_authenticated/dashboard/settings/'
       path: '/'
@@ -393,6 +413,7 @@ const AuthenticatedDashboardSettingsRouteWithChildren =
   )
 
 interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardSplatRoute: typeof AuthenticatedDashboardSplatRoute
   AuthenticatedDashboardBotBuilderRoute: typeof AuthenticatedDashboardBotBuilderRoute
   AuthenticatedDashboardCampaignsRoute: typeof AuthenticatedDashboardCampaignsRoute
   AuthenticatedDashboardContactsRoute: typeof AuthenticatedDashboardContactsRoute
@@ -404,6 +425,7 @@ interface AuthenticatedDashboardRouteChildren {
 
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
+    AuthenticatedDashboardSplatRoute: AuthenticatedDashboardSplatRoute,
     AuthenticatedDashboardBotBuilderRoute:
       AuthenticatedDashboardBotBuilderRoute,
     AuthenticatedDashboardCampaignsRoute: AuthenticatedDashboardCampaignsRoute,

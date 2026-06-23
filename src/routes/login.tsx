@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { z } from "zod";
 import { MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -8,17 +9,35 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 
+const searchSchema = z.object({
+  redirect: z.string().optional(),
+});
+
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Entrar — FlowChat" }] }),
+  validateSearch: searchSchema,
   component: LoginPage,
 });
 
 function LoginPage() {
   const navigate = useNavigate();
   const router = useRouter();
+  const { redirect } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Se a sessão já está válida (ex.: voltou do /signup), pula direto pro painel.
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!active || !data.user) return;
+      navigate({ to: redirect ?? "/dashboard", replace: true });
+    });
+    return () => {
+      active = false;
+    };
+  }, [navigate, redirect]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,7 +50,7 @@ function LoginPage() {
     }
     toast.success("Bem-vindo de volta!");
     await router.invalidate();
-    navigate({ to: "/dashboard" });
+    navigate({ to: redirect ?? "/dashboard", replace: true });
   }
 
   return (
