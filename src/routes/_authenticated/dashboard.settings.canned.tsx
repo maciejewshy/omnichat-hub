@@ -11,8 +11,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession, isAdminOrManager } from "@/lib/auth";
 
+import { RoleGuard } from "@/lib/role-guard";
+
 export const Route = createFileRoute("/_authenticated/dashboard/settings/canned")({
-  component: CannedPage,
+  component: () => (
+    <RoleGuard allow={["admin", "gerente"]}>
+      <CannedPage />
+    </RoleGuard>
+  ),
 });
 
 function CannedPage() {

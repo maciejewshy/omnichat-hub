@@ -1,9 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Megaphone } from "lucide-react";
+import { RoleGuard } from "@/lib/role-guard";
 
 export const Route = createFileRoute("/_authenticated/dashboard/campaigns")({
   head: () => ({ meta: [{ title: "Campanhas — FlowChat" }] }),
-  component: CampaignsPage,
+  component: () => (
+    <RoleGuard allow={["admin", "gerente"]}>
+      <CampaignsPage />
+    </RoleGuard>
+  ),
 });
 
 function CampaignsPage() {

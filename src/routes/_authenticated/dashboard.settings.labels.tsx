@@ -9,8 +9,14 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession, isAdminOrManager } from "@/lib/auth";
 
+import { RoleGuard } from "@/lib/role-guard";
+
 export const Route = createFileRoute("/_authenticated/dashboard/settings/labels")({
-  component: LabelsPage,
+  component: () => (
+    <RoleGuard allow={["admin", "gerente"]}>
+      <LabelsPage />
+    </RoleGuard>
+  ),
 });
 
 function LabelsPage() {
