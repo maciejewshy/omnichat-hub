@@ -42,6 +42,8 @@ const DASHBOARD_ROUTES = [
   "/_authenticated/dashboard/settings/inboxes",
   "/_authenticated/dashboard/settings/labels",
   "/_authenticated/dashboard/settings/canned",
+  "/_authenticated/dashboard/settings/teams",
+  "/_authenticated/dashboard/settings/routing",
   "/_authenticated/dashboard/superadmin",
 ];
 
@@ -53,7 +55,10 @@ describe("dashboard route registry", () => {
 
   it("expõe páginas públicas apenas para login/signup/home", () => {
     const publicIds = allIds.filter(
-      (id) => !id.startsWith("/_authenticated") && id !== "__root__",
+      (id) =>
+        !id.startsWith("/_authenticated") &&
+        !id.startsWith("/api/") &&
+        id !== "__root__",
     );
     expect(publicIds.sort()).toEqual(["/", "/login", "/signup"]);
   });

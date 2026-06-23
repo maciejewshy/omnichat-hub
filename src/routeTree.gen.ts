@@ -15,6 +15,8 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as ApiProfileAvailabilityRouteImport } from './routes/api/profile/availability'
+import { Route as ApiConnectionsInboxIdRouteImport } from './routes/api/connections/$inboxId'
 import { Route as AuthenticatedDashboardSuperadminRouteImport } from './routes/_authenticated/dashboard.superadmin'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
 import { Route as AuthenticatedDashboardReportsRouteImport } from './routes/_authenticated/dashboard.reports'
@@ -23,6 +25,12 @@ import { Route as AuthenticatedDashboardCampaignsRouteImport } from './routes/_a
 import { Route as AuthenticatedDashboardBotBuilderRouteImport } from './routes/_authenticated/dashboard.bot-builder'
 import { Route as AuthenticatedDashboardSplatRouteImport } from './routes/_authenticated/dashboard.$'
 import { Route as AuthenticatedDashboardSettingsIndexRouteImport } from './routes/_authenticated/dashboard.settings.index'
+import { Route as ApiWebhooksChannelInboxIdRouteImport } from './routes/api/webhooks/$channel/$inboxId'
+import { Route as ApiConversationsConversationIdRedistributeRouteImport } from './routes/api/conversations/$conversationId/redistribute'
+import { Route as ApiConversationsConversationIdMessagesRouteImport } from './routes/api/conversations/$conversationId/messages'
+import { Route as ApiConnectionsInboxIdTestRouteImport } from './routes/api/connections/$inboxId/test'
+import { Route as AuthenticatedDashboardSettingsTeamsRouteImport } from './routes/_authenticated/dashboard.settings.teams'
+import { Route as AuthenticatedDashboardSettingsRoutingRouteImport } from './routes/_authenticated/dashboard.settings.routing'
 import { Route as AuthenticatedDashboardSettingsLabelsRouteImport } from './routes/_authenticated/dashboard.settings.labels'
 import { Route as AuthenticatedDashboardSettingsInboxesRouteImport } from './routes/_authenticated/dashboard.settings.inboxes'
 import { Route as AuthenticatedDashboardSettingsCannedRouteImport } from './routes/_authenticated/dashboard.settings.canned'
@@ -58,6 +66,16 @@ const AuthenticatedDashboardIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const ApiProfileAvailabilityRoute = ApiProfileAvailabilityRouteImport.update({
+  id: '/api/profile/availability',
+  path: '/api/profile/availability',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiConnectionsInboxIdRoute = ApiConnectionsInboxIdRouteImport.update({
+  id: '/api/connections/$inboxId',
+  path: '/api/connections/$inboxId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedDashboardSuperadminRoute =
   AuthenticatedDashboardSuperadminRouteImport.update({
     id: '/superadmin',
@@ -106,6 +124,42 @@ const AuthenticatedDashboardSettingsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedDashboardSettingsRoute,
   } as any)
+const ApiWebhooksChannelInboxIdRoute =
+  ApiWebhooksChannelInboxIdRouteImport.update({
+    id: '/api/webhooks/$channel/$inboxId',
+    path: '/api/webhooks/$channel/$inboxId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiConversationsConversationIdRedistributeRoute =
+  ApiConversationsConversationIdRedistributeRouteImport.update({
+    id: '/api/conversations/$conversationId/redistribute',
+    path: '/api/conversations/$conversationId/redistribute',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiConversationsConversationIdMessagesRoute =
+  ApiConversationsConversationIdMessagesRouteImport.update({
+    id: '/api/conversations/$conversationId/messages',
+    path: '/api/conversations/$conversationId/messages',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiConnectionsInboxIdTestRoute =
+  ApiConnectionsInboxIdTestRouteImport.update({
+    id: '/test',
+    path: '/test',
+    getParentRoute: () => ApiConnectionsInboxIdRoute,
+  } as any)
+const AuthenticatedDashboardSettingsTeamsRoute =
+  AuthenticatedDashboardSettingsTeamsRouteImport.update({
+    id: '/teams',
+    path: '/teams',
+    getParentRoute: () => AuthenticatedDashboardSettingsRoute,
+  } as any)
+const AuthenticatedDashboardSettingsRoutingRoute =
+  AuthenticatedDashboardSettingsRoutingRouteImport.update({
+    id: '/routing',
+    path: '/routing',
+    getParentRoute: () => AuthenticatedDashboardSettingsRoute,
+  } as any)
 const AuthenticatedDashboardSettingsLabelsRoute =
   AuthenticatedDashboardSettingsLabelsRouteImport.update({
     id: '/labels',
@@ -143,11 +197,19 @@ export interface FileRoutesByFullPath {
   '/dashboard/reports': typeof AuthenticatedDashboardReportsRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRouteWithChildren
   '/dashboard/superadmin': typeof AuthenticatedDashboardSuperadminRoute
+  '/api/connections/$inboxId': typeof ApiConnectionsInboxIdRouteWithChildren
+  '/api/profile/availability': typeof ApiProfileAvailabilityRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/dashboard/settings/agents': typeof AuthenticatedDashboardSettingsAgentsRoute
   '/dashboard/settings/canned': typeof AuthenticatedDashboardSettingsCannedRoute
   '/dashboard/settings/inboxes': typeof AuthenticatedDashboardSettingsInboxesRoute
   '/dashboard/settings/labels': typeof AuthenticatedDashboardSettingsLabelsRoute
+  '/dashboard/settings/routing': typeof AuthenticatedDashboardSettingsRoutingRoute
+  '/dashboard/settings/teams': typeof AuthenticatedDashboardSettingsTeamsRoute
+  '/api/connections/$inboxId/test': typeof ApiConnectionsInboxIdTestRoute
+  '/api/conversations/$conversationId/messages': typeof ApiConversationsConversationIdMessagesRoute
+  '/api/conversations/$conversationId/redistribute': typeof ApiConversationsConversationIdRedistributeRoute
+  '/api/webhooks/$channel/$inboxId': typeof ApiWebhooksChannelInboxIdRoute
   '/dashboard/settings/': typeof AuthenticatedDashboardSettingsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -160,11 +222,19 @@ export interface FileRoutesByTo {
   '/dashboard/contacts': typeof AuthenticatedDashboardContactsRoute
   '/dashboard/reports': typeof AuthenticatedDashboardReportsRoute
   '/dashboard/superadmin': typeof AuthenticatedDashboardSuperadminRoute
+  '/api/connections/$inboxId': typeof ApiConnectionsInboxIdRouteWithChildren
+  '/api/profile/availability': typeof ApiProfileAvailabilityRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/dashboard/settings/agents': typeof AuthenticatedDashboardSettingsAgentsRoute
   '/dashboard/settings/canned': typeof AuthenticatedDashboardSettingsCannedRoute
   '/dashboard/settings/inboxes': typeof AuthenticatedDashboardSettingsInboxesRoute
   '/dashboard/settings/labels': typeof AuthenticatedDashboardSettingsLabelsRoute
+  '/dashboard/settings/routing': typeof AuthenticatedDashboardSettingsRoutingRoute
+  '/dashboard/settings/teams': typeof AuthenticatedDashboardSettingsTeamsRoute
+  '/api/connections/$inboxId/test': typeof ApiConnectionsInboxIdTestRoute
+  '/api/conversations/$conversationId/messages': typeof ApiConversationsConversationIdMessagesRoute
+  '/api/conversations/$conversationId/redistribute': typeof ApiConversationsConversationIdRedistributeRoute
+  '/api/webhooks/$channel/$inboxId': typeof ApiWebhooksChannelInboxIdRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsIndexRoute
 }
 export interface FileRoutesById {
@@ -181,11 +251,19 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/reports': typeof AuthenticatedDashboardReportsRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRouteWithChildren
   '/_authenticated/dashboard/superadmin': typeof AuthenticatedDashboardSuperadminRoute
+  '/api/connections/$inboxId': typeof ApiConnectionsInboxIdRouteWithChildren
+  '/api/profile/availability': typeof ApiProfileAvailabilityRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/dashboard/settings/agents': typeof AuthenticatedDashboardSettingsAgentsRoute
   '/_authenticated/dashboard/settings/canned': typeof AuthenticatedDashboardSettingsCannedRoute
   '/_authenticated/dashboard/settings/inboxes': typeof AuthenticatedDashboardSettingsInboxesRoute
   '/_authenticated/dashboard/settings/labels': typeof AuthenticatedDashboardSettingsLabelsRoute
+  '/_authenticated/dashboard/settings/routing': typeof AuthenticatedDashboardSettingsRoutingRoute
+  '/_authenticated/dashboard/settings/teams': typeof AuthenticatedDashboardSettingsTeamsRoute
+  '/api/connections/$inboxId/test': typeof ApiConnectionsInboxIdTestRoute
+  '/api/conversations/$conversationId/messages': typeof ApiConversationsConversationIdMessagesRoute
+  '/api/conversations/$conversationId/redistribute': typeof ApiConversationsConversationIdRedistributeRoute
+  '/api/webhooks/$channel/$inboxId': typeof ApiWebhooksChannelInboxIdRoute
   '/_authenticated/dashboard/settings/': typeof AuthenticatedDashboardSettingsIndexRoute
 }
 export interface FileRouteTypes {
@@ -202,11 +280,19 @@ export interface FileRouteTypes {
     | '/dashboard/reports'
     | '/dashboard/settings'
     | '/dashboard/superadmin'
+    | '/api/connections/$inboxId'
+    | '/api/profile/availability'
     | '/dashboard/'
     | '/dashboard/settings/agents'
     | '/dashboard/settings/canned'
     | '/dashboard/settings/inboxes'
     | '/dashboard/settings/labels'
+    | '/dashboard/settings/routing'
+    | '/dashboard/settings/teams'
+    | '/api/connections/$inboxId/test'
+    | '/api/conversations/$conversationId/messages'
+    | '/api/conversations/$conversationId/redistribute'
+    | '/api/webhooks/$channel/$inboxId'
     | '/dashboard/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -219,11 +305,19 @@ export interface FileRouteTypes {
     | '/dashboard/contacts'
     | '/dashboard/reports'
     | '/dashboard/superadmin'
+    | '/api/connections/$inboxId'
+    | '/api/profile/availability'
     | '/dashboard'
     | '/dashboard/settings/agents'
     | '/dashboard/settings/canned'
     | '/dashboard/settings/inboxes'
     | '/dashboard/settings/labels'
+    | '/dashboard/settings/routing'
+    | '/dashboard/settings/teams'
+    | '/api/connections/$inboxId/test'
+    | '/api/conversations/$conversationId/messages'
+    | '/api/conversations/$conversationId/redistribute'
+    | '/api/webhooks/$channel/$inboxId'
     | '/dashboard/settings'
   id:
     | '__root__'
@@ -239,11 +333,19 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/reports'
     | '/_authenticated/dashboard/settings'
     | '/_authenticated/dashboard/superadmin'
+    | '/api/connections/$inboxId'
+    | '/api/profile/availability'
     | '/_authenticated/dashboard/'
     | '/_authenticated/dashboard/settings/agents'
     | '/_authenticated/dashboard/settings/canned'
     | '/_authenticated/dashboard/settings/inboxes'
     | '/_authenticated/dashboard/settings/labels'
+    | '/_authenticated/dashboard/settings/routing'
+    | '/_authenticated/dashboard/settings/teams'
+    | '/api/connections/$inboxId/test'
+    | '/api/conversations/$conversationId/messages'
+    | '/api/conversations/$conversationId/redistribute'
+    | '/api/webhooks/$channel/$inboxId'
     | '/_authenticated/dashboard/settings/'
   fileRoutesById: FileRoutesById
 }
@@ -252,6 +354,11 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  ApiConnectionsInboxIdRoute: typeof ApiConnectionsInboxIdRouteWithChildren
+  ApiProfileAvailabilityRoute: typeof ApiProfileAvailabilityRoute
+  ApiConversationsConversationIdMessagesRoute: typeof ApiConversationsConversationIdMessagesRoute
+  ApiConversationsConversationIdRedistributeRoute: typeof ApiConversationsConversationIdRedistributeRoute
+  ApiWebhooksChannelInboxIdRoute: typeof ApiWebhooksChannelInboxIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -297,6 +404,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/'
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/api/profile/availability': {
+      id: '/api/profile/availability'
+      path: '/api/profile/availability'
+      fullPath: '/api/profile/availability'
+      preLoaderRoute: typeof ApiProfileAvailabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/connections/$inboxId': {
+      id: '/api/connections/$inboxId'
+      path: '/api/connections/$inboxId'
+      fullPath: '/api/connections/$inboxId'
+      preLoaderRoute: typeof ApiConnectionsInboxIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/dashboard/superadmin': {
       id: '/_authenticated/dashboard/superadmin'
@@ -354,6 +475,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardSettingsRoute
     }
+    '/api/webhooks/$channel/$inboxId': {
+      id: '/api/webhooks/$channel/$inboxId'
+      path: '/api/webhooks/$channel/$inboxId'
+      fullPath: '/api/webhooks/$channel/$inboxId'
+      preLoaderRoute: typeof ApiWebhooksChannelInboxIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/conversations/$conversationId/redistribute': {
+      id: '/api/conversations/$conversationId/redistribute'
+      path: '/api/conversations/$conversationId/redistribute'
+      fullPath: '/api/conversations/$conversationId/redistribute'
+      preLoaderRoute: typeof ApiConversationsConversationIdRedistributeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/conversations/$conversationId/messages': {
+      id: '/api/conversations/$conversationId/messages'
+      path: '/api/conversations/$conversationId/messages'
+      fullPath: '/api/conversations/$conversationId/messages'
+      preLoaderRoute: typeof ApiConversationsConversationIdMessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/connections/$inboxId/test': {
+      id: '/api/connections/$inboxId/test'
+      path: '/test'
+      fullPath: '/api/connections/$inboxId/test'
+      preLoaderRoute: typeof ApiConnectionsInboxIdTestRouteImport
+      parentRoute: typeof ApiConnectionsInboxIdRoute
+    }
+    '/_authenticated/dashboard/settings/teams': {
+      id: '/_authenticated/dashboard/settings/teams'
+      path: '/teams'
+      fullPath: '/dashboard/settings/teams'
+      preLoaderRoute: typeof AuthenticatedDashboardSettingsTeamsRouteImport
+      parentRoute: typeof AuthenticatedDashboardSettingsRoute
+    }
+    '/_authenticated/dashboard/settings/routing': {
+      id: '/_authenticated/dashboard/settings/routing'
+      path: '/routing'
+      fullPath: '/dashboard/settings/routing'
+      preLoaderRoute: typeof AuthenticatedDashboardSettingsRoutingRouteImport
+      parentRoute: typeof AuthenticatedDashboardSettingsRoute
+    }
     '/_authenticated/dashboard/settings/labels': {
       id: '/_authenticated/dashboard/settings/labels'
       path: '/labels'
@@ -390,6 +553,8 @@ interface AuthenticatedDashboardSettingsRouteChildren {
   AuthenticatedDashboardSettingsCannedRoute: typeof AuthenticatedDashboardSettingsCannedRoute
   AuthenticatedDashboardSettingsInboxesRoute: typeof AuthenticatedDashboardSettingsInboxesRoute
   AuthenticatedDashboardSettingsLabelsRoute: typeof AuthenticatedDashboardSettingsLabelsRoute
+  AuthenticatedDashboardSettingsRoutingRoute: typeof AuthenticatedDashboardSettingsRoutingRoute
+  AuthenticatedDashboardSettingsTeamsRoute: typeof AuthenticatedDashboardSettingsTeamsRoute
   AuthenticatedDashboardSettingsIndexRoute: typeof AuthenticatedDashboardSettingsIndexRoute
 }
 
@@ -403,6 +568,10 @@ const AuthenticatedDashboardSettingsRouteChildren: AuthenticatedDashboardSetting
       AuthenticatedDashboardSettingsInboxesRoute,
     AuthenticatedDashboardSettingsLabelsRoute:
       AuthenticatedDashboardSettingsLabelsRoute,
+    AuthenticatedDashboardSettingsRoutingRoute:
+      AuthenticatedDashboardSettingsRoutingRoute,
+    AuthenticatedDashboardSettingsTeamsRoute:
+      AuthenticatedDashboardSettingsTeamsRoute,
     AuthenticatedDashboardSettingsIndexRoute:
       AuthenticatedDashboardSettingsIndexRoute,
   }
@@ -454,12 +623,42 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface ApiConnectionsInboxIdRouteChildren {
+  ApiConnectionsInboxIdTestRoute: typeof ApiConnectionsInboxIdTestRoute
+}
+
+const ApiConnectionsInboxIdRouteChildren: ApiConnectionsInboxIdRouteChildren = {
+  ApiConnectionsInboxIdTestRoute: ApiConnectionsInboxIdTestRoute,
+}
+
+const ApiConnectionsInboxIdRouteWithChildren =
+  ApiConnectionsInboxIdRoute._addFileChildren(
+    ApiConnectionsInboxIdRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  ApiConnectionsInboxIdRoute: ApiConnectionsInboxIdRouteWithChildren,
+  ApiProfileAvailabilityRoute: ApiProfileAvailabilityRoute,
+  ApiConversationsConversationIdMessagesRoute:
+    ApiConversationsConversationIdMessagesRoute,
+  ApiConversationsConversationIdRedistributeRoute:
+    ApiConversationsConversationIdRedistributeRoute,
+  ApiWebhooksChannelInboxIdRoute: ApiWebhooksChannelInboxIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
