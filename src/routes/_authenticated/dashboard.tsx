@@ -78,7 +78,7 @@ function DashboardLayout() {
         })}
         {hasRole(session.roles, "superadmin") && (
           <Link
-            to="/superadmin"
+            to="/dashboard/superadmin"
             title="Superadmin"
             className="mt-auto flex h-11 w-11 items-center justify-center rounded-lg text-warning hover:bg-nav-foreground/10"
           >
