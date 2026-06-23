@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Outlet, Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   MessageSquare,
@@ -18,6 +19,7 @@ import { useSession, isAdmin, highestRoleLabel, hasRole } from "@/lib/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Sidebar,
   SidebarContent,
@@ -32,6 +34,8 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+
+type AvailabilityStatus = "online" | "busy" | "offline";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardLayout,
@@ -49,6 +53,7 @@ function DashboardLayout() {
   const session = useSession();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [updatingAvailability, setUpdatingAvailability] = useState(false);
 
   async function handleSignOut() {
     await queryClient.cancelQueries();
@@ -56,6 +61,61 @@ function DashboardLayout() {
     await supabase.auth.signOut();
     toast.success("Sessão encerrada");
     navigate({ to: "/login", replace: true });
+  }
+
+  async function handleAvailabilityChange(nextAvailability: AvailabilityStatus) {
+    const currentAvailability = session.profile?.availability as AvailabilityStatus | undefined;
+    if (!currentAvailability || nextAvailability === currentAvailability) {
+      return;
+    }
+
+    setUpdatingAvailability(true);
+    try {
+      const headers = await getAuthHeaders();
+      const response = await fetch("/api/profile/availability", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ availability: nextAvailability }),
+      });
+      const payload = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(
+          payload && typeof payload === "object" && "error" in payload && typeof payload.error === "string"
+            ? payload.error
+            : "Erro ao atualizar disponibilidade",
+        );
+      }
+
+      await session.refresh();
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["conversations"] }),
+        queryClient.invalidateQueries({ queryKey: ["tenant-members"] }),
+        queryClient.invalidateQueries({ queryKey: ["routing-profiles"] }),
+      ]);
+
+      const reassignedCount =
+        payload &&
+        typeof payload === "object" &&
+        "reassignedCount" in payload &&
+        typeof payload.reassignedCount === "number"
+          ? payload.reassignedCount
+          : 0;
+
+      if (reassignedCount > 0) {
+        toast.success(
+          `Disponibilidade atualizada. ${reassignedCount} conversa${reassignedCount > 1 ? "s" : ""} redistribuida${reassignedCount > 1 ? "s" : ""}.`,
+        );
+      } else {
+        toast.success("Disponibilidade atualizada");
+      }
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao atualizar disponibilidade",
+      );
+    } finally {
+      setUpdatingAvailability(false);
+    }
   }
 
   const canManage = isAdmin(session.roles) || hasRole(session.roles, "gerente");
@@ -93,6 +153,9 @@ function DashboardLayout() {
             userName={session.profile?.full_name ?? "—"}
             tenantName={session.tenant?.name ?? "Carregando…"}
             roleLabel={highestRoleLabel(session.roles)}
+            availability={(session.profile?.availability as AvailabilityStatus | undefined) ?? "online"}
+            updatingAvailability={updatingAvailability}
+            onAvailabilityChange={handleAvailabilityChange}
           />
           <div className="flex min-h-0 flex-1">
             <Outlet />
@@ -223,10 +286,16 @@ function DashboardTopBar({
   userName,
   tenantName,
   roleLabel,
+  availability,
+  updatingAvailability,
+  onAvailabilityChange,
 }: {
   userName: string;
   tenantName: string;
   roleLabel: string;
+  availability: AvailabilityStatus;
+  updatingAvailability: boolean;
+  onAvailabilityChange: (availability: AvailabilityStatus) => void;
 }) {
   return (
     <header className="flex h-12 items-center justify-between border-b bg-background px-4">
@@ -239,9 +308,40 @@ function DashboardTopBar({
         <span className="text-muted-foreground">·</span>
         <span className="text-muted-foreground">{userName}</span>
       </div>
-      <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-        {roleLabel}
-      </span>
+      <div className="flex items-center gap-2">
+        <Select
+          value={availability}
+          onValueChange={(value) => onAvailabilityChange(value as AvailabilityStatus)}
+          disabled={updatingAvailability}
+        >
+          <SelectTrigger className="h-8 w-[140px] text-xs">
+            <SelectValue placeholder="Disponibilidade" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="online">Online</SelectItem>
+            <SelectItem value="busy">Ocupado</SelectItem>
+            <SelectItem value="offline">Offline</SelectItem>
+          </SelectContent>
+        </Select>
+        <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+          {roleLabel}
+        </span>
+      </div>
     </header>
   );
+}
+
+async function getAuthHeaders() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) throw error;
+
+  const token = data.session?.access_token;
+  if (!token) {
+    throw new Error("Sessao expirada");
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
 }

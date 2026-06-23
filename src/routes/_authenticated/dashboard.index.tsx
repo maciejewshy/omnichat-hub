@@ -7,15 +7,17 @@ import {
   Send,
   Paperclip,
   Lock,
+  Check,
   CheckCheck,
+  CircleAlert,
   Hand,
-  ArrowRightLeft,
   Bot,
   Globe,
   Phone,
   Instagram,
   Facebook,
   Filter,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -35,6 +37,7 @@ type ConvRow = {
   id: string;
   status: "open" | "pending" | "resolved" | "snoozed";
   assignee_id: string | null;
+  team_id: string | null;
   inbox_id: string;
   contact_id: string;
   last_activity_at: string;
@@ -59,7 +62,7 @@ function ConversationsPage() {
       let q = supabase
         .from("conversations")
         .select(
-          "id,status,assignee_id,inbox_id,contact_id,last_activity_at,unread_count,labels,contacts(id,name,phone,email,avatar_url),inboxes(id,name,channel_type)",
+          "id,status,assignee_id,team_id,inbox_id,contact_id,last_activity_at,unread_count,labels,contacts(id,name,phone,email,avatar_url),inboxes(id,name,channel_type)",
         )
         .order("last_activity_at", { ascending: false })
         .limit(100);
@@ -261,6 +264,19 @@ function statusBorder(status: string) {
   }
 }
 
+async function getAuthHeaders() {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+
+  if (!token) {
+    throw new Error("Sessao expirada");
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
+
 function ConversationListItem({
   conv,
   active,
@@ -315,9 +331,11 @@ function ConversationListItem({
 function ConversationView({ conv, onRefresh }: { conv: ConvRow; onRefresh: () => void }) {
   const session = useSession();
   const queryClient = useQueryClient();
+  const canManage = isAdminOrManager(session.roles);
   const [tab, setTab] = useState<"reply" | "private">("reply");
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [redistributing, setRedistributing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const { data: messages = [] } = useQuery({
@@ -334,35 +352,113 @@ function ConversationView({ conv, onRefresh }: { conv: ConvRow; onRefresh: () =>
     refetchInterval: 5000,
   });
 
+  const { data: teams = [] } = useQuery({
+    queryKey: ["conversation-teams"],
+    enabled: canManage,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("teams").select("id, name").order("name");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const { data: agents = [] } = useQuery({
+    queryKey: ["conversation-agents"],
+    enabled: canManage,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .order("full_name");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages.length]);
 
   const Icon = channelIcon(conv.inboxes?.channel_type);
+  const currentTeam = teams.find((team) => team.id === conv.team_id) ?? null;
+  const currentAssignee = agents.find((agent) => agent.id === conv.assignee_id) ?? null;
 
   async function send() {
     if (!text.trim() || !session.profile?.tenant_id) return;
     setSending(true);
-    const { error } = await supabase.from("messages").insert({
-      tenant_id: session.profile.tenant_id,
-      conversation_id: conv.id,
-      sender_type: "agent",
-      sender_id: session.user!.id,
-      content: text,
-      is_private: tab === "private",
-    });
-    if (!error) {
-      await supabase
-        .from("conversations")
-        .update({ last_activity_at: new Date().toISOString() })
-        .eq("id", conv.id);
+    try {
+      const headers = await getAuthHeaders();
+      const response = await fetch(`/api/conversations/${conv.id}/messages`, {
+        method: "POST",
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: text,
+          isPrivate: tab === "private",
+        }),
+      });
+
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(
+          payload && typeof payload === "object" && "error" in payload && typeof payload.error === "string"
+            ? payload.error
+            : "Erro ao enviar mensagem",
+        );
+      }
+
       setText("");
       queryClient.invalidateQueries({ queryKey: ["messages", conv.id] });
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
-    } else {
-      toast.error(error.message);
+      if (tab === "private") {
+        toast.success("Nota privada adicionada");
+      } else if (payload && typeof payload === "object" && "delivery" in payload) {
+        const delivery = typeof payload.delivery === "string" ? payload.delivery : "local_only";
+        if (delivery === "telegram") toast.success("Mensagem enviada via Telegram");
+        else if (delivery === "whatsapp") toast.success("Mensagem enviada via WhatsApp");
+        else if (delivery === "instagram") toast.success("Mensagem enviada via Instagram");
+        else if (delivery === "facebook") toast.success("Mensagem enviada via Facebook");
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao enviar mensagem");
+    } finally {
+      setSending(false);
     }
-    setSending(false);
+  }
+
+  async function redistributeConversation() {
+    setRedistributing(true);
+    try {
+      const headers = await getAuthHeaders();
+      const response = await fetch(`/api/conversations/${conv.id}/redistribute`, {
+        method: "POST",
+        headers,
+      });
+
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(
+          payload && typeof payload === "object" && "error" in payload && typeof payload.error === "string"
+            ? payload.error
+            : "Erro ao redistribuir conversa",
+        );
+      }
+
+      if (payload && typeof payload === "object" && "changed" in payload && payload.changed === false) {
+        toast.success("Nenhuma redistribuicao necessaria");
+      } else {
+        toast.success("Conversa redistribuida");
+      }
+
+      onRefresh();
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao redistribuir conversa");
+    } finally {
+      setRedistributing(false);
+    }
   }
 
   async function assignToMe() {
@@ -387,6 +483,29 @@ function ConversationView({ conv, onRefresh }: { conv: ConvRow; onRefresh: () =>
     }
   }
 
+  async function changeTeam(teamId: string | null) {
+    const { error } = await supabase.from("conversations").update({ team_id: teamId }).eq("id", conv.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(teamId ? "Equipe atribuida" : "Equipe removida");
+    onRefresh();
+  }
+
+  async function changeAssignee(userId: string | null) {
+    const { error } = await supabase
+      .from("conversations")
+      .update({ assignee_id: userId })
+      .eq("id", conv.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(userId ? "Agente atribuido" : "Atribuicao removida");
+    onRefresh();
+  }
+
   return (
     <>
       <header className="flex items-center justify-between border-b px-5 py-3">
@@ -402,6 +521,54 @@ function ConversationView({ conv, onRefresh }: { conv: ConvRow; onRefresh: () =>
             <Button size="sm" variant="outline" onClick={assignToMe} className="gap-1.5">
               <Hand className="h-3.5 w-3.5" /> Assumir
             </Button>
+          )}
+          {(canManage || conv.assignee_id === session.user?.id || conv.assignee_id === null) && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={redistributeConversation}
+              className="gap-1.5"
+              disabled={redistributing}
+            >
+              <RefreshCw className={cn("h-3.5 w-3.5", redistributing && "animate-spin")} />
+              Redistribuir
+            </Button>
+          )}
+          {canManage && (
+            <Select
+              value={conv.assignee_id ?? "unassigned"}
+              onValueChange={(value) => changeAssignee(value === "unassigned" ? null : value)}
+            >
+              <SelectTrigger className="h-8 w-44 text-xs">
+                <SelectValue placeholder="Agente" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unassigned">Sem agente</SelectItem>
+                {agents.map((agent) => (
+                  <SelectItem key={agent.id} value={agent.id}>
+                    {agent.full_name || agent.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {canManage && (
+            <Select
+              value={conv.team_id ?? "no-team"}
+              onValueChange={(value) => changeTeam(value === "no-team" ? null : value)}
+            >
+              <SelectTrigger className="h-8 w-40 text-xs">
+                <SelectValue placeholder="Equipe" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="no-team">Sem equipe</SelectItem>
+                {teams.map((team) => (
+                  <SelectItem key={team.id} value={team.id}>
+                    {team.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           )}
           <Select value={conv.status} onValueChange={(v) => changeStatus(v as never)}>
             <SelectTrigger className="h-8 w-32 text-xs">
@@ -419,6 +586,21 @@ function ConversationView({ conv, onRefresh }: { conv: ConvRow; onRefresh: () =>
           </Button>
         </div>
       </header>
+
+      {!canManage && (currentTeam || conv.assignee_id) && (
+        <div className="flex flex-wrap items-center gap-2 border-b px-5 py-2 text-xs text-muted-foreground">
+          {currentAssignee && (
+            <span className="rounded-full bg-secondary px-2 py-1">
+              Agente: {currentAssignee.full_name || currentAssignee.email}
+            </span>
+          )}
+          {currentTeam && (
+            <span className="rounded-full bg-secondary px-2 py-1">
+              Equipe: {currentTeam.name}
+            </span>
+          )}
+        </div>
+      )}
 
       <div ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-secondary/20 px-6 py-5">
         {messages.map((m) => (
@@ -486,8 +668,19 @@ function ConversationView({ conv, onRefresh }: { conv: ConvRow; onRefresh: () =>
   );
 }
 
-function MessageBubble({ message }: { message: { sender_type: string; content: string; is_private: boolean; created_at: string } }) {
+function MessageBubble({
+  message,
+}: {
+  message: {
+    sender_type: string;
+    content: string;
+    is_private: boolean;
+    created_at: string;
+    attachments?: unknown;
+  };
+}) {
   const isAgent = message.sender_type === "agent" || message.sender_type === "bot";
+  const delivery = getMessageDelivery(message.attachments);
   if (message.is_private) {
     return (
       <div className="mx-auto max-w-[80%] rounded-lg border border-warning/30 bg-chat-private p-3 text-sm text-chat-private-foreground">
@@ -514,12 +707,48 @@ function MessageBubble({ message }: { message: { sender_type: string; content: s
           </p>
         )}
         <p className="whitespace-pre-wrap">{message.content}</p>
-        <p className="mt-1 text-right text-[10px] opacity-70">
-          {new Date(message.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-        </p>
+        <div className="mt-1 flex items-center justify-end gap-1 text-[10px] opacity-70">
+          {delivery && isAgent && (
+            <span className="inline-flex items-center gap-1">
+              <delivery.icon className={cn("h-3 w-3", delivery.className)} />
+              <span>{delivery.label}</span>
+            </span>
+          )}
+          <span>
+            {new Date(message.created_at).toLocaleTimeString("pt-BR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </span>
+        </div>
       </div>
     </div>
   );
+}
+
+function getMessageDelivery(attachments: unknown) {
+  if (!Array.isArray(attachments)) return null;
+
+  const withDelivery = attachments.find(
+    (attachment) =>
+      attachment &&
+      typeof attachment === "object" &&
+      "delivery" in attachment &&
+      typeof attachment.delivery === "string",
+  ) as { delivery?: string } | undefined;
+
+  switch (withDelivery?.delivery) {
+    case "sent":
+      return { label: "enviado", icon: Check, className: "text-muted-foreground" };
+    case "delivered":
+      return { label: "entregue", icon: CheckCheck, className: "text-muted-foreground" };
+    case "read":
+      return { label: "lida", icon: CheckCheck, className: "text-primary" };
+    case "failed":
+      return { label: "falhou", icon: CircleAlert, className: "text-destructive" };
+    default:
+      return null;
+  }
 }
 
 function ContactPanel({ conv }: { conv: ConvRow }) {

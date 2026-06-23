@@ -100,6 +100,50 @@ export type Database = {
           },
         ]
       }
+      agent_routing_preferences: {
+        Row: {
+          allowed_channels: Database["public"]["Enums"]["channel_type"][]
+          allowed_inbox_ids: string[]
+          auto_assign: boolean
+          created_at: string
+          last_assigned_at: string | null
+          max_open_conversations: number
+          tenant_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allowed_channels?: Database["public"]["Enums"]["channel_type"][]
+          allowed_inbox_ids?: string[]
+          auto_assign?: boolean
+          created_at?: string
+          last_assigned_at?: string | null
+          max_open_conversations?: number
+          tenant_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allowed_channels?: Database["public"]["Enums"]["channel_type"][]
+          allowed_inbox_ids?: string[]
+          auto_assign?: boolean
+          created_at?: string
+          last_assigned_at?: string | null
+          max_open_conversations?: number
+          tenant_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_routing_preferences_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_notes: {
         Row: {
           author_id: string | null
@@ -447,6 +491,63 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "profiles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      routing_rules: {
+        Row: {
+          channel_types: Database["public"]["Enums"]["channel_type"][]
+          created_at: string
+          id: string
+          inbox_ids: string[]
+          is_active: boolean
+          name: string
+          priority: number
+          strategy: string
+          team_id: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          channel_types?: Database["public"]["Enums"]["channel_type"][]
+          created_at?: string
+          id?: string
+          inbox_ids?: string[]
+          is_active?: boolean
+          name: string
+          priority?: number
+          strategy?: string
+          team_id: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          channel_types?: Database["public"]["Enums"]["channel_type"][]
+          created_at?: string
+          id?: string
+          inbox_ids?: string[]
+          is_active?: boolean
+          name?: string
+          priority?: number
+          strategy?: string
+          team_id?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routing_rules_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "routing_rules_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
