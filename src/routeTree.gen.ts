@@ -9,38 +9,260 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authenticated/superadmin'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
+import { Route as AuthenticatedDashboardReportsRouteImport } from './routes/_authenticated/dashboard.reports'
+import { Route as AuthenticatedDashboardContactsRouteImport } from './routes/_authenticated/dashboard.contacts'
+import { Route as AuthenticatedDashboardCampaignsRouteImport } from './routes/_authenticated/dashboard.campaigns'
+import { Route as AuthenticatedDashboardBotBuilderRouteImport } from './routes/_authenticated/dashboard.bot-builder'
+import { Route as AuthenticatedDashboardSettingsIndexRouteImport } from './routes/_authenticated/dashboard.settings.index'
+import { Route as AuthenticatedDashboardSettingsLabelsRouteImport } from './routes/_authenticated/dashboard.settings.labels'
+import { Route as AuthenticatedDashboardSettingsInboxesRouteImport } from './routes/_authenticated/dashboard.settings.inboxes'
+import { Route as AuthenticatedDashboardSettingsCannedRouteImport } from './routes/_authenticated/dashboard.settings.canned'
+import { Route as AuthenticatedDashboardSettingsAgentsRouteImport } from './routes/_authenticated/dashboard.settings.agents'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSuperadminRoute = AuthenticatedSuperadminRouteImport.update({
+  id: '/superadmin',
+  path: '/superadmin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardIndexRoute =
+  AuthenticatedDashboardIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardSettingsRoute =
+  AuthenticatedDashboardSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardReportsRoute =
+  AuthenticatedDashboardReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardContactsRoute =
+  AuthenticatedDashboardContactsRouteImport.update({
+    id: '/contacts',
+    path: '/contacts',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardCampaignsRoute =
+  AuthenticatedDashboardCampaignsRouteImport.update({
+    id: '/campaigns',
+    path: '/campaigns',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardBotBuilderRoute =
+  AuthenticatedDashboardBotBuilderRouteImport.update({
+    id: '/bot-builder',
+    path: '/bot-builder',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardSettingsIndexRoute =
+  AuthenticatedDashboardSettingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDashboardSettingsRoute,
+  } as any)
+const AuthenticatedDashboardSettingsLabelsRoute =
+  AuthenticatedDashboardSettingsLabelsRouteImport.update({
+    id: '/labels',
+    path: '/labels',
+    getParentRoute: () => AuthenticatedDashboardSettingsRoute,
+  } as any)
+const AuthenticatedDashboardSettingsInboxesRoute =
+  AuthenticatedDashboardSettingsInboxesRouteImport.update({
+    id: '/inboxes',
+    path: '/inboxes',
+    getParentRoute: () => AuthenticatedDashboardSettingsRoute,
+  } as any)
+const AuthenticatedDashboardSettingsCannedRoute =
+  AuthenticatedDashboardSettingsCannedRouteImport.update({
+    id: '/canned',
+    path: '/canned',
+    getParentRoute: () => AuthenticatedDashboardSettingsRoute,
+  } as any)
+const AuthenticatedDashboardSettingsAgentsRoute =
+  AuthenticatedDashboardSettingsAgentsRouteImport.update({
+    id: '/agents',
+    path: '/agents',
+    getParentRoute: () => AuthenticatedDashboardSettingsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/superadmin': typeof AuthenticatedSuperadminRoute
+  '/dashboard/bot-builder': typeof AuthenticatedDashboardBotBuilderRoute
+  '/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRoute
+  '/dashboard/contacts': typeof AuthenticatedDashboardContactsRoute
+  '/dashboard/reports': typeof AuthenticatedDashboardReportsRoute
+  '/dashboard/settings': typeof AuthenticatedDashboardSettingsRouteWithChildren
+  '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/dashboard/settings/agents': typeof AuthenticatedDashboardSettingsAgentsRoute
+  '/dashboard/settings/canned': typeof AuthenticatedDashboardSettingsCannedRoute
+  '/dashboard/settings/inboxes': typeof AuthenticatedDashboardSettingsInboxesRoute
+  '/dashboard/settings/labels': typeof AuthenticatedDashboardSettingsLabelsRoute
+  '/dashboard/settings/': typeof AuthenticatedDashboardSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/superadmin': typeof AuthenticatedSuperadminRoute
+  '/dashboard/bot-builder': typeof AuthenticatedDashboardBotBuilderRoute
+  '/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRoute
+  '/dashboard/contacts': typeof AuthenticatedDashboardContactsRoute
+  '/dashboard/reports': typeof AuthenticatedDashboardReportsRoute
+  '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/dashboard/settings/agents': typeof AuthenticatedDashboardSettingsAgentsRoute
+  '/dashboard/settings/canned': typeof AuthenticatedDashboardSettingsCannedRoute
+  '/dashboard/settings/inboxes': typeof AuthenticatedDashboardSettingsInboxesRoute
+  '/dashboard/settings/labels': typeof AuthenticatedDashboardSettingsLabelsRoute
+  '/dashboard/settings': typeof AuthenticatedDashboardSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/_authenticated/superadmin': typeof AuthenticatedSuperadminRoute
+  '/_authenticated/dashboard/bot-builder': typeof AuthenticatedDashboardBotBuilderRoute
+  '/_authenticated/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRoute
+  '/_authenticated/dashboard/contacts': typeof AuthenticatedDashboardContactsRoute
+  '/_authenticated/dashboard/reports': typeof AuthenticatedDashboardReportsRoute
+  '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRouteWithChildren
+  '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/_authenticated/dashboard/settings/agents': typeof AuthenticatedDashboardSettingsAgentsRoute
+  '/_authenticated/dashboard/settings/canned': typeof AuthenticatedDashboardSettingsCannedRoute
+  '/_authenticated/dashboard/settings/inboxes': typeof AuthenticatedDashboardSettingsInboxesRoute
+  '/_authenticated/dashboard/settings/labels': typeof AuthenticatedDashboardSettingsLabelsRoute
+  '/_authenticated/dashboard/settings/': typeof AuthenticatedDashboardSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/dashboard'
+    | '/superadmin'
+    | '/dashboard/bot-builder'
+    | '/dashboard/campaigns'
+    | '/dashboard/contacts'
+    | '/dashboard/reports'
+    | '/dashboard/settings'
+    | '/dashboard/'
+    | '/dashboard/settings/agents'
+    | '/dashboard/settings/canned'
+    | '/dashboard/settings/inboxes'
+    | '/dashboard/settings/labels'
+    | '/dashboard/settings/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/superadmin'
+    | '/dashboard/bot-builder'
+    | '/dashboard/campaigns'
+    | '/dashboard/contacts'
+    | '/dashboard/reports'
+    | '/dashboard'
+    | '/dashboard/settings/agents'
+    | '/dashboard/settings/canned'
+    | '/dashboard/settings/inboxes'
+    | '/dashboard/settings/labels'
+    | '/dashboard/settings'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/signup'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/superadmin'
+    | '/_authenticated/dashboard/bot-builder'
+    | '/_authenticated/dashboard/campaigns'
+    | '/_authenticated/dashboard/contacts'
+    | '/_authenticated/dashboard/reports'
+    | '/_authenticated/dashboard/settings'
+    | '/_authenticated/dashboard/'
+    | '/_authenticated/dashboard/settings/agents'
+    | '/_authenticated/dashboard/settings/canned'
+    | '/_authenticated/dashboard/settings/inboxes'
+    | '/_authenticated/dashboard/settings/labels'
+    | '/_authenticated/dashboard/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +270,172 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/superadmin': {
+      id: '/_authenticated/superadmin'
+      path: '/superadmin'
+      fullPath: '/superadmin'
+      preLoaderRoute: typeof AuthenticatedSuperadminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard/': {
+      id: '/_authenticated/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/settings': {
+      id: '/_authenticated/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof AuthenticatedDashboardSettingsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/reports': {
+      id: '/_authenticated/dashboard/reports'
+      path: '/reports'
+      fullPath: '/dashboard/reports'
+      preLoaderRoute: typeof AuthenticatedDashboardReportsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/contacts': {
+      id: '/_authenticated/dashboard/contacts'
+      path: '/contacts'
+      fullPath: '/dashboard/contacts'
+      preLoaderRoute: typeof AuthenticatedDashboardContactsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/campaigns': {
+      id: '/_authenticated/dashboard/campaigns'
+      path: '/campaigns'
+      fullPath: '/dashboard/campaigns'
+      preLoaderRoute: typeof AuthenticatedDashboardCampaignsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/bot-builder': {
+      id: '/_authenticated/dashboard/bot-builder'
+      path: '/bot-builder'
+      fullPath: '/dashboard/bot-builder'
+      preLoaderRoute: typeof AuthenticatedDashboardBotBuilderRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/settings/': {
+      id: '/_authenticated/dashboard/settings/'
+      path: '/'
+      fullPath: '/dashboard/settings/'
+      preLoaderRoute: typeof AuthenticatedDashboardSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardSettingsRoute
+    }
+    '/_authenticated/dashboard/settings/labels': {
+      id: '/_authenticated/dashboard/settings/labels'
+      path: '/labels'
+      fullPath: '/dashboard/settings/labels'
+      preLoaderRoute: typeof AuthenticatedDashboardSettingsLabelsRouteImport
+      parentRoute: typeof AuthenticatedDashboardSettingsRoute
+    }
+    '/_authenticated/dashboard/settings/inboxes': {
+      id: '/_authenticated/dashboard/settings/inboxes'
+      path: '/inboxes'
+      fullPath: '/dashboard/settings/inboxes'
+      preLoaderRoute: typeof AuthenticatedDashboardSettingsInboxesRouteImport
+      parentRoute: typeof AuthenticatedDashboardSettingsRoute
+    }
+    '/_authenticated/dashboard/settings/canned': {
+      id: '/_authenticated/dashboard/settings/canned'
+      path: '/canned'
+      fullPath: '/dashboard/settings/canned'
+      preLoaderRoute: typeof AuthenticatedDashboardSettingsCannedRouteImport
+      parentRoute: typeof AuthenticatedDashboardSettingsRoute
+    }
+    '/_authenticated/dashboard/settings/agents': {
+      id: '/_authenticated/dashboard/settings/agents'
+      path: '/agents'
+      fullPath: '/dashboard/settings/agents'
+      preLoaderRoute: typeof AuthenticatedDashboardSettingsAgentsRouteImport
+      parentRoute: typeof AuthenticatedDashboardSettingsRoute
+    }
   }
 }
 
+interface AuthenticatedDashboardSettingsRouteChildren {
+  AuthenticatedDashboardSettingsAgentsRoute: typeof AuthenticatedDashboardSettingsAgentsRoute
+  AuthenticatedDashboardSettingsCannedRoute: typeof AuthenticatedDashboardSettingsCannedRoute
+  AuthenticatedDashboardSettingsInboxesRoute: typeof AuthenticatedDashboardSettingsInboxesRoute
+  AuthenticatedDashboardSettingsLabelsRoute: typeof AuthenticatedDashboardSettingsLabelsRoute
+  AuthenticatedDashboardSettingsIndexRoute: typeof AuthenticatedDashboardSettingsIndexRoute
+}
+
+const AuthenticatedDashboardSettingsRouteChildren: AuthenticatedDashboardSettingsRouteChildren =
+  {
+    AuthenticatedDashboardSettingsAgentsRoute:
+      AuthenticatedDashboardSettingsAgentsRoute,
+    AuthenticatedDashboardSettingsCannedRoute:
+      AuthenticatedDashboardSettingsCannedRoute,
+    AuthenticatedDashboardSettingsInboxesRoute:
+      AuthenticatedDashboardSettingsInboxesRoute,
+    AuthenticatedDashboardSettingsLabelsRoute:
+      AuthenticatedDashboardSettingsLabelsRoute,
+    AuthenticatedDashboardSettingsIndexRoute:
+      AuthenticatedDashboardSettingsIndexRoute,
+  }
+
+const AuthenticatedDashboardSettingsRouteWithChildren =
+  AuthenticatedDashboardSettingsRoute._addFileChildren(
+    AuthenticatedDashboardSettingsRouteChildren,
+  )
+
+interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardBotBuilderRoute: typeof AuthenticatedDashboardBotBuilderRoute
+  AuthenticatedDashboardCampaignsRoute: typeof AuthenticatedDashboardCampaignsRoute
+  AuthenticatedDashboardContactsRoute: typeof AuthenticatedDashboardContactsRoute
+  AuthenticatedDashboardReportsRoute: typeof AuthenticatedDashboardReportsRoute
+  AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRouteWithChildren
+  AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+}
+
+const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
+  {
+    AuthenticatedDashboardBotBuilderRoute:
+      AuthenticatedDashboardBotBuilderRoute,
+    AuthenticatedDashboardCampaignsRoute: AuthenticatedDashboardCampaignsRoute,
+    AuthenticatedDashboardContactsRoute: AuthenticatedDashboardContactsRoute,
+    AuthenticatedDashboardReportsRoute: AuthenticatedDashboardReportsRoute,
+    AuthenticatedDashboardSettingsRoute:
+      AuthenticatedDashboardSettingsRouteWithChildren,
+    AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+  }
+
+const AuthenticatedDashboardRouteWithChildren =
+  AuthenticatedDashboardRoute._addFileChildren(
+    AuthenticatedDashboardRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
+  AuthenticatedSuperadminRoute: typeof AuthenticatedSuperadminRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
+  AuthenticatedSuperadminRoute: AuthenticatedSuperadminRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
