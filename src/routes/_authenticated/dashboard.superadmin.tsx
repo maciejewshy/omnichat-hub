@@ -36,7 +36,6 @@ function SuperadminPage() {
       if (error) throw error;
       return data ?? [];
     },
-    enabled: hasRole(session.roles, "superadmin"),
   });
 
   async function toggleStatus(id: string, status: string) {
