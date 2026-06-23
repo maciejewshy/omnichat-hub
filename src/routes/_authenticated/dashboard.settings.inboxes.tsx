@@ -26,8 +26,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { supabase } from "@/integrations/supabase/client";
 import { useSession, isAdmin } from "@/lib/auth";
 
+import { RoleGuard } from "@/lib/role-guard";
+
 export const Route = createFileRoute("/_authenticated/dashboard/settings/inboxes")({
-  component: InboxesPage,
+  component: () => (
+    <RoleGuard allow={["admin"]}>
+      <InboxesPage />
+    </RoleGuard>
+  ),
 });
 
 const channelMeta: Record<string, { icon: typeof Phone; label: string; setupNote: string }> = {
