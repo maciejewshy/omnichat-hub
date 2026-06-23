@@ -38,13 +38,17 @@ function DashboardLayout() {
     navigate({ to: "/login", replace: true });
   }
 
-  const navItems = [
+  // Itens de navegação são filtrados pelas roles do usuário. RBAC duplo:
+  // (a) o menu esconde o item; (b) cada rota é guardada por <RoleGuard> para
+  // bloquear acesso direto via URL. Hides only — never gates the layout itself.
+  const canManage = isAdmin(session.roles) || hasRole(session.roles, "gerente");
+  const navItems: Array<{ to: string; icon: typeof Inbox; label: string; exact?: boolean }> = [
     { to: "/dashboard", icon: Inbox, label: "Conversas", exact: true },
     { to: "/dashboard/contacts", icon: Users, label: "Contatos" },
-    { to: "/dashboard/reports", icon: BarChart3, label: "Relatórios" },
-    { to: "/dashboard/campaigns", icon: Megaphone, label: "Campanhas" },
   ];
-  if (isAdmin(session.roles) || hasRole(session.roles, "gerente")) {
+  if (canManage) {
+    navItems.push({ to: "/dashboard/reports", icon: BarChart3, label: "Relatórios" });
+    navItems.push({ to: "/dashboard/campaigns", icon: Megaphone, label: "Campanhas" });
     navItems.push({ to: "/dashboard/bot-builder", icon: Bot, label: "Bot" });
   }
   navItems.push({ to: "/dashboard/settings", icon: Settings, label: "Configurações" });
