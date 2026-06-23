@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { Building2, Inbox as InboxIcon, Tag, Users, Zap, Bot } from "lucide-react";
+import { Building2, Inbox as InboxIcon, Tag, Users, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/dashboard/settings")({
@@ -15,7 +15,6 @@ function SettingsLayout() {
     { to: "/dashboard/settings/agents", label: "Agentes", icon: Users },
     { to: "/dashboard/settings/labels", label: "Labels", icon: Tag },
     { to: "/dashboard/settings/canned", label: "Respostas rápidas", icon: Zap },
-    { to: "/dashboard/settings/bot", label: "Bot builder", icon: Bot },
   ];
   return (
     <div className="flex min-h-0 flex-1">

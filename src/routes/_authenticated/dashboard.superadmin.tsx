@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession, hasRole } from "@/lib/auth";
 
-export const Route = createFileRoute("/_authenticated/superadmin")({
+export const Route = createFileRoute("/_authenticated/dashboard/superadmin")({
   head: () => ({ meta: [{ title: "Superadmin — FlowChat" }] }),
   component: SuperadminPage,
 });

@@ -13,9 +13,9 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authenticated/superadmin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as AuthenticatedDashboardSuperadminRouteImport } from './routes/_authenticated/dashboard.superadmin'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
 import { Route as AuthenticatedDashboardReportsRouteImport } from './routes/_authenticated/dashboard.reports'
 import { Route as AuthenticatedDashboardContactsRouteImport } from './routes/_authenticated/dashboard.contacts'
@@ -46,11 +46,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSuperadminRoute = AuthenticatedSuperadminRouteImport.update({
-  id: '/superadmin',
-  path: '/superadmin',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -60,6 +55,12 @@ const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/',
     path: '/',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardSuperadminRoute =
+  AuthenticatedDashboardSuperadminRouteImport.update({
+    id: '/superadmin',
+    path: '/superadmin',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
 const AuthenticatedDashboardSettingsRoute =
@@ -128,12 +129,12 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
-  '/superadmin': typeof AuthenticatedSuperadminRoute
   '/dashboard/bot-builder': typeof AuthenticatedDashboardBotBuilderRoute
   '/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRoute
   '/dashboard/contacts': typeof AuthenticatedDashboardContactsRoute
   '/dashboard/reports': typeof AuthenticatedDashboardReportsRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRouteWithChildren
+  '/dashboard/superadmin': typeof AuthenticatedDashboardSuperadminRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/dashboard/settings/agents': typeof AuthenticatedDashboardSettingsAgentsRoute
   '/dashboard/settings/canned': typeof AuthenticatedDashboardSettingsCannedRoute
@@ -145,11 +146,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/superadmin': typeof AuthenticatedSuperadminRoute
   '/dashboard/bot-builder': typeof AuthenticatedDashboardBotBuilderRoute
   '/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRoute
   '/dashboard/contacts': typeof AuthenticatedDashboardContactsRoute
   '/dashboard/reports': typeof AuthenticatedDashboardReportsRoute
+  '/dashboard/superadmin': typeof AuthenticatedDashboardSuperadminRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/dashboard/settings/agents': typeof AuthenticatedDashboardSettingsAgentsRoute
   '/dashboard/settings/canned': typeof AuthenticatedDashboardSettingsCannedRoute
@@ -164,12 +165,12 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
-  '/_authenticated/superadmin': typeof AuthenticatedSuperadminRoute
   '/_authenticated/dashboard/bot-builder': typeof AuthenticatedDashboardBotBuilderRoute
   '/_authenticated/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRoute
   '/_authenticated/dashboard/contacts': typeof AuthenticatedDashboardContactsRoute
   '/_authenticated/dashboard/reports': typeof AuthenticatedDashboardReportsRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRouteWithChildren
+  '/_authenticated/dashboard/superadmin': typeof AuthenticatedDashboardSuperadminRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/dashboard/settings/agents': typeof AuthenticatedDashboardSettingsAgentsRoute
   '/_authenticated/dashboard/settings/canned': typeof AuthenticatedDashboardSettingsCannedRoute
@@ -184,12 +185,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/dashboard'
-    | '/superadmin'
     | '/dashboard/bot-builder'
     | '/dashboard/campaigns'
     | '/dashboard/contacts'
     | '/dashboard/reports'
     | '/dashboard/settings'
+    | '/dashboard/superadmin'
     | '/dashboard/'
     | '/dashboard/settings/agents'
     | '/dashboard/settings/canned'
@@ -201,11 +202,11 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
-    | '/superadmin'
     | '/dashboard/bot-builder'
     | '/dashboard/campaigns'
     | '/dashboard/contacts'
     | '/dashboard/reports'
+    | '/dashboard/superadmin'
     | '/dashboard'
     | '/dashboard/settings/agents'
     | '/dashboard/settings/canned'
@@ -219,12 +220,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/_authenticated/dashboard'
-    | '/_authenticated/superadmin'
     | '/_authenticated/dashboard/bot-builder'
     | '/_authenticated/dashboard/campaigns'
     | '/_authenticated/dashboard/contacts'
     | '/_authenticated/dashboard/reports'
     | '/_authenticated/dashboard/settings'
+    | '/_authenticated/dashboard/superadmin'
     | '/_authenticated/dashboard/'
     | '/_authenticated/dashboard/settings/agents'
     | '/_authenticated/dashboard/settings/canned'
@@ -270,13 +271,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/superadmin': {
-      id: '/_authenticated/superadmin'
-      path: '/superadmin'
-      fullPath: '/superadmin'
-      preLoaderRoute: typeof AuthenticatedSuperadminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -289,6 +283,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/superadmin': {
+      id: '/_authenticated/dashboard/superadmin'
+      path: '/superadmin'
+      fullPath: '/dashboard/superadmin'
+      preLoaderRoute: typeof AuthenticatedDashboardSuperadminRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/settings': {
@@ -397,6 +398,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardContactsRoute: typeof AuthenticatedDashboardContactsRoute
   AuthenticatedDashboardReportsRoute: typeof AuthenticatedDashboardReportsRoute
   AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRouteWithChildren
+  AuthenticatedDashboardSuperadminRoute: typeof AuthenticatedDashboardSuperadminRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
@@ -409,6 +411,8 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardReportsRoute: AuthenticatedDashboardReportsRoute,
     AuthenticatedDashboardSettingsRoute:
       AuthenticatedDashboardSettingsRouteWithChildren,
+    AuthenticatedDashboardSuperadminRoute:
+      AuthenticatedDashboardSuperadminRoute,
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   }
 
@@ -419,12 +423,10 @@ const AuthenticatedDashboardRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
-  AuthenticatedSuperadminRoute: typeof AuthenticatedSuperadminRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
-  AuthenticatedSuperadminRoute: AuthenticatedSuperadminRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
