@@ -15,7 +15,6 @@ function SettingsLayout() {
     { to: "/dashboard/settings/agents", label: "Agentes", icon: Users },
     { to: "/dashboard/settings/labels", label: "Labels", icon: Tag },
     { to: "/dashboard/settings/canned", label: "Respostas rápidas", icon: Zap },
-    { to: "/dashboard/settings/bot", label: "Bot builder", icon: Bot },
   ];
   return (
     <div className="flex min-h-0 flex-1">
