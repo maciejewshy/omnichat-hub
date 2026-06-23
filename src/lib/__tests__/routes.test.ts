@@ -9,18 +9,30 @@
 import { describe, expect, it } from "vitest";
 import { routeTree } from "@/routeTree.gen";
 
-function collectRouteIds(node: unknown, acc: string[] = []): string[] {
-  const n = node as { id?: string; children?: Record<string, unknown> };
-  if (n?.id) acc.push(n.id);
-  if (n?.children) {
-    for (const child of Object.values(n.children)) {
-      collectRouteIds(child, acc);
-    }
-  }
-  return acc;
+// TanStack expõe a tabela completa de rotas em `routesById` após
+// `_addFileTypes`. Fazemos fallback para `children` recursivo caso a versão
+// mude o formato no futuro.
+function collectRouteIds(): string[] {
+  const tree = routeTree as unknown as {
+    routesById?: Record<string, unknown>;
+    id?: string;
+    children?: unknown;
+  };
+  if (tree.routesById) return Object.keys(tree.routesById);
+
+  const ids: string[] = [];
+  const walk = (node: unknown) => {
+    const n = node as { id?: string; children?: unknown };
+    if (n?.id) ids.push(n.id);
+    const c = n?.children;
+    if (Array.isArray(c)) c.forEach(walk);
+    else if (c && typeof c === "object") Object.values(c).forEach(walk);
+  };
+  walk(tree);
+  return ids;
 }
 
-const allIds = collectRouteIds(routeTree);
+const allIds = collectRouteIds();
 
 const DASHBOARD_ROUTES = [
   "/_authenticated/dashboard/",
