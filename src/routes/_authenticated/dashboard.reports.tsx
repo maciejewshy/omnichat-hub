@@ -4,10 +4,15 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { MessageSquare, CheckCheck, Bot, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { RoleGuard } from "@/lib/role-guard";
 
 export const Route = createFileRoute("/_authenticated/dashboard/reports")({
   head: () => ({ meta: [{ title: "Relatórios — FlowChat" }] }),
-  component: ReportsPage,
+  component: () => (
+    <RoleGuard allow={["admin", "gerente"]}>
+      <ReportsPage />
+    </RoleGuard>
+  ),
 });
 
 function ReportsPage() {

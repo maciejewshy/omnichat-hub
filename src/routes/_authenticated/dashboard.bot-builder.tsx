@@ -25,12 +25,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession, isAdmin, hasRole } from "@/lib/auth";
 
+import { RoleGuard } from "@/lib/role-guard";
+
 export const Route = createFileRoute("/_authenticated/dashboard/bot-builder")({
   head: () => ({ meta: [{ title: "Construtor de bot — FlowChat" }] }),
   component: () => (
-    <ReactFlowProvider>
-      <BotBuilderPage />
-    </ReactFlowProvider>
+    <RoleGuard allow={["admin", "gerente"]}>
+      <ReactFlowProvider>
+        <BotBuilderPage />
+      </ReactFlowProvider>
+    </RoleGuard>
   ),
 });
 

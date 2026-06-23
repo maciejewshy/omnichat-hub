@@ -3,9 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Users } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
+import { RoleGuard } from "@/lib/role-guard";
 
 export const Route = createFileRoute("/_authenticated/dashboard/settings/agents")({
-  component: AgentsPage,
+  component: () => (
+    <RoleGuard allow={["admin"]}>
+      <AgentsPage />
+    </RoleGuard>
+  ),
 });
 
 function AgentsPage() {
