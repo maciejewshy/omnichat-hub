@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { Building2, Inbox as InboxIcon, Tag, Users, Zap, Bot } from "lucide-react";
+import { Building2, Inbox as InboxIcon, Tag, Users, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/dashboard/settings")({
