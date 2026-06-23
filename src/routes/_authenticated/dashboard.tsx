@@ -17,6 +17,11 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardLayout,
+  notFoundComponent: () => (
+    <div className="flex min-h-screen items-center justify-center p-6 text-sm text-muted-foreground">
+      Página do painel não encontrada. <Link to="/dashboard" className="ml-1 text-primary hover:underline">Voltar</Link>
+    </div>
+  ),
 });
 
 function DashboardLayout() {
