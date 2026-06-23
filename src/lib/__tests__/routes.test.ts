@@ -9,26 +9,18 @@
 import { describe, expect, it } from "vitest";
 import { routeTree } from "@/routeTree.gen";
 
-// TanStack expõe a tabela completa de rotas em `routesById` após
-// `_addFileTypes`. Fazemos fallback para `children` recursivo caso a versão
-// mude o formato no futuro.
+// TanStack Router expõe o id da rota em `route.options.id` e os filhos em
+// `route.children` (array). Caminhamos a árvore inteira e coletamos os ids.
 function collectRouteIds(): string[] {
-  const tree = routeTree as unknown as {
-    routesById?: Record<string, unknown>;
-    id?: string;
-    children?: unknown;
-  };
-  if (tree.routesById) return Object.keys(tree.routesById);
-
   const ids: string[] = [];
   const walk = (node: unknown) => {
-    const n = node as { id?: string; children?: unknown };
-    if (n?.id) ids.push(n.id);
+    const n = node as { options?: { id?: string }; children?: unknown };
+    if (n?.options?.id) ids.push(n.options.id);
     const c = n?.children;
     if (Array.isArray(c)) c.forEach(walk);
     else if (c && typeof c === "object") Object.values(c).forEach(walk);
   };
-  walk(tree);
+  walk(routeTree);
   return ids;
 }
 
