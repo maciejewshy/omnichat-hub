@@ -1,5 +1,4 @@
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Shield, Building2 } from "lucide-react";
 import { toast } from "sonner";
@@ -13,24 +12,19 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useSession, hasRole } from "@/lib/auth";
+import { RoleGuard } from "@/lib/role-guard";
 
 export const Route = createFileRoute("/_authenticated/dashboard/superadmin")({
   head: () => ({ meta: [{ title: "Superadmin — FlowChat" }] }),
-  component: SuperadminPage,
+  component: () => (
+    <RoleGuard allow={["superadmin"]}>
+      <SuperadminPage />
+    </RoleGuard>
+  ),
 });
 
 function SuperadminPage() {
-  const session = useSession();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (!session.loading && !hasRole(session.roles, "superadmin")) {
-      toast.error("Acesso restrito ao superadmin");
-      navigate({ to: "/dashboard" });
-    }
-  }, [session.loading, session.roles, navigate]);
 
   const { data: tenants = [] } = useQuery({
     queryKey: ["all-tenants"],
